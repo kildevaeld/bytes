@@ -31,20 +31,6 @@ extension UnsafeMutablePointer {
     }
 }
 
-public protocol BytesConvertible {
-    var bytes: [UInt8] { get }
-    init(_ bytes: [UInt8])
-}
-
-extension BytesConvertible {
-    public init(_ bytes: ArraySlice<UInt8>) {
-        self.init([UInt8](bytes))
-    }
-    
-    public init(_ bytes: BytesSlice) {
-        self.init(bytes.array)
-    }
-}
 
 public protocol BytesType  {
     var count: Int { get }
@@ -61,6 +47,42 @@ extension BytesType {
         return Int(self.read(0, to: 8)!)
     }
     
+    public var int64: Int64 {
+        return Int64(self.read(0, to: 8)!)
+    }
+
+    public var int32: Int32 {
+        return Int32(self.read(0, to: 4)!)
+    }
+    
+    public var int16: Int16 {
+        return Int16(self.read(0, to: 2)!)
+    }
+    
+    public var int8: Int8 {
+        return Int8(self.read(0, to: 1)!)
+    }
+    
+    public var uint: UInt {
+        return UInt(self.read(0, to: 8)!)
+    }
+    
+    public var uint64: UInt64 {
+        return UInt64(self.read(0, to: 8)!)
+    }
+    
+    public var uint32: UInt32 {
+        return UInt32(self.read(0, to: 4)!)
+    }
+    
+    public var uint16: UInt16 {
+        return UInt16(self.read(0, to: 2)!)
+    }
+    
+    public var uint8: UInt8 {
+        return UInt8(self.read(0, to: 1)!)
+    }
+    
     public func toString(from:Int?, to:Int) -> String {
         let index = from == nil ? 0 : from!
         let r = self.read(index, to: to)
@@ -72,24 +94,26 @@ public class Bytes : BytesType {
     public var buffer: UnsafeMutablePointer<UInt8>
     
     private var _len: Int
+    
     public var count: Int {
         return self._len
     }
     
-    init(count: Int) {
+    
+    public init(count: Int) {
         self.buffer = UnsafeMutablePointer<UInt8>.alloc(count)
         self.buffer.initializeZero(count)
     
         self._len = count
     }
     
-    init(var bytes:[UInt8]) {
+    public init(var bytes:[UInt8]) {
         self.buffer = UnsafeMutablePointer<UInt8>.alloc(bytes.count)
         bcopy(&bytes, self.buffer, bytes.count)
         self._len = bytes.count
     }
     
-    init(bytes:Bytes, copy: Bool = true) {
+    public init(bytes:Bytes, copy: Bool = true) {
         if copy == true {
             self.buffer = UnsafeMutablePointer<UInt8>.alloc(bytes.count)
             bcopy(bytes.buffer, self.buffer, bytes.count)
@@ -100,7 +124,7 @@ public class Bytes : BytesType {
         self._len = bytes.count
     }
     
-    convenience init(bytes:BytesSlice, copy: Bool = true) {
+    public convenience init(bytes:BytesSlice, copy: Bool = true) {
         self.init(bytes:bytes.bytes, copy: copy)
     }
     
@@ -127,7 +151,7 @@ public class Bytes : BytesType {
     public func write(byte:UInt8, to: Int) -> Int {
         if to >= self._len { return -1 }
         self.buffer[to] = byte
-        return 0
+        return 1
     }
     
     public func write(bytes:BytesConvertible, to:Int? = nil) -> Int {
@@ -137,6 +161,7 @@ public class Bytes : BytesType {
     public func write(bytes: [UInt8], length: Int? = nil, to:Int? = nil) -> Int {
         let index = to == nil ? 0 : to!
         var size = length == nil ? bytes.count : length!
+        
         size = size > bytes.count ? bytes.count : size
         
         let totalSize = index + size
@@ -162,7 +187,6 @@ public class Bytes : BytesType {
         
         return size
     }
-    
     
     
     public func write(bytes:UnsafePointer<UInt8>, length:Int, to:Int? = nil) -> Int {
@@ -308,126 +332,6 @@ public class BytesWriter : Writable {
     
 }
 
-struct SlicePosition {
-    let index: Int
-    var to: Int
-}
-
-public class BytesSlice: BytesType {
-    let bytes: Bytes
-    var position: SlicePosition
-    public var count: Int {
-        return self.position.to
-    }
-    init (_ bytes: Bytes, position: SlicePosition) {
-        self.bytes = bytes
-        self.position = position
-    }
-    
-    public func read(index: Int) -> UInt8 {
-        return self.bytes.read(index + self.position.index)
-    }
-    
-    public func read(index: Int, to: Int) -> BytesSlice? {
-        return self.bytes.read(index + self.position.index, to: to)
-    }
-    
-    public func scan<T: BytesConvertible>(index: Int, to: Int) -> T? {
-        let slice = self.read(index, to:to)
-        if slice == nil {
-            return nil
-        }
-        return T(slice!)
-    }
-    
-    public func write(byte:UInt8, to: Int) -> Int {
-        let diff = self.position.to - to
-        
-        let ret = self.bytes.write(byte, to: self.position.index + to)
-       
-        if ret != -1 && diff < 0 {
-            self.position.to += to
-        }
-        return ret
-    }
-    
-    public func write(bytes:BytesConvertible, to:Int? = nil) -> Int {
-        return self.write(bytes.bytes, length:nil, to: to)
-    }
-    
-    public func write(bytes: [UInt8], length: Int? = nil, to:Int? = nil) -> Int {
-        let index = to == nil ? 0 : to!
-        let count = length == nil ? bytes.count : length!
-        
-        let diff = self.position.to - count
-        
-        let ret = self.bytes.write(bytes, length: count, to: index)
-        
-        if ret != -1 && diff < 0 {
-            self.position.to += index
-        }
-        return ret
-    }
-    
-    
-    
-    public func write(bytes:UnsafePointer<UInt8>, length:Int, to:Int? = nil) -> Int {
-        let index = to == nil ? 0 : to!
-        
-        let diff = self.position.to - length
-        
-        let ret = self.bytes.write(bytes, length: length, to: index)
-        
-        if ret != -1 && diff < 0 {
-            self.position.to += index
-        }
-        return ret
-    }
-    
-    
-    public var array: [UInt8] {
-        
-        var array = [UInt8](count: self.position.to, repeatedValue: 0)
-        
-        let buf = self.bytes.buffer.advancedBy(self.position.index)
-        bcopy(buf,&array,self.position.to)
-        
-        return array
-        
-        
-    }
-}
-
-extension BytesSlice : CollectionType, Sliceable {
-    public typealias Generator = IndexingGenerator<BytesSlice>
-    public typealias Element = UInt8
-    public typealias Index = Int
-    public typealias SubSlice = BytesSlice
-    
-    public var startIndex: Index {
-        return 0
-    }
-    
-    public var endIndex: Index {
-        return self.position.to
-    }
-    
-    public subscript(i: Index) -> UInt8 {
-        get {
-            return self.read(i)
-        } set (value) {
-            self.bytes[i] = value
-        }
-    }
-    
-    public func generate() -> Generator  {
-        return IndexingGenerator(self)
-    }
-    
-    public subscript(i: Range<Index>) -> BytesSlice {
-        return self.read(i.startIndex, to: i.endIndex)!
-    }
-}
 
 
 

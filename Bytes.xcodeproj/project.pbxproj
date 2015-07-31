@@ -9,11 +9,12 @@
 /* Begin PBXBuildFile section */
 		3A3AEF3C1B69203900383762 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3AEF3B1B69203900383762 /* main.swift */; };
 		3A3AEF461B69205200383762 /* Bytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3AEF431B69204800383762 /* Bytes.swift */; };
-		3A3AEF471B69205500383762 /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3AEF441B69204800383762 /* utils.swift */; };
+		3A3AEF471B69205500383762 /* ByteConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3AEF441B69204800383762 /* ByteConverter.swift */; };
 		3A3AEF491B694DE200383762 /* ReadableFileStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3AEF481B694DE200383762 /* ReadableFileStream.swift */; };
 		3A3AEF4B1B69790700383762 /* WritableFileStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3AEF4A1B69790700383762 /* WritableFileStream.swift */; };
 		3A3AEF4D1B699E4200383762 /* ReadWriteFileStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3AEF4C1B699E4200383762 /* ReadWriteFileStream.swift */; };
-		3A918E901B6ADEA30030BCCF /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A918E8F1B6ADEA30030BCCF /* extensions.swift */; };
+		3A918E901B6ADEA30030BCCF /* BytesConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A918E8F1B6ADEA30030BCCF /* BytesConvertible.swift */; };
+		3A918E921B6B78C40030BCCF /* BytesSlice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A918E911B6B78C40030BCCF /* BytesSlice.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,12 +33,13 @@
 		3A3AEF381B69203900383762 /* Bytes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Bytes; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A3AEF3B1B69203900383762 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		3A3AEF431B69204800383762 /* Bytes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bytes.swift; sourceTree = "<group>"; };
-		3A3AEF441B69204800383762 /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
+		3A3AEF441B69204800383762 /* ByteConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteConverter.swift; sourceTree = "<group>"; };
 		3A3AEF451B69204F00383762 /* Bytes.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Bytes.podspec; sourceTree = "<group>"; };
 		3A3AEF481B694DE200383762 /* ReadableFileStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadableFileStream.swift; sourceTree = "<group>"; };
 		3A3AEF4A1B69790700383762 /* WritableFileStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritableFileStream.swift; sourceTree = "<group>"; };
 		3A3AEF4C1B699E4200383762 /* ReadWriteFileStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadWriteFileStream.swift; sourceTree = "<group>"; };
-		3A918E8F1B6ADEA30030BCCF /* extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
+		3A918E8F1B6ADEA30030BCCF /* BytesConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BytesConvertible.swift; sourceTree = "<group>"; };
+		3A918E911B6B78C40030BCCF /* BytesSlice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BytesSlice.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,8 +83,9 @@
 			isa = PBXGroup;
 			children = (
 				3A3AEF431B69204800383762 /* Bytes.swift */,
-				3A3AEF441B69204800383762 /* utils.swift */,
-				3A918E8F1B6ADEA30030BCCF /* extensions.swift */,
+				3A918E911B6B78C40030BCCF /* BytesSlice.swift */,
+				3A3AEF441B69204800383762 /* ByteConverter.swift */,
+				3A918E8F1B6ADEA30030BCCF /* BytesConvertible.swift */,
 				3A918E8E1B6AAB9A0030BCCF /* FileSystem */,
 			);
 			path = Classes;
@@ -156,8 +159,9 @@
 			files = (
 				3A3AEF4B1B69790700383762 /* WritableFileStream.swift in Sources */,
 				3A3AEF4D1B699E4200383762 /* ReadWriteFileStream.swift in Sources */,
-				3A3AEF471B69205500383762 /* utils.swift in Sources */,
-				3A918E901B6ADEA30030BCCF /* extensions.swift in Sources */,
+				3A918E921B6B78C40030BCCF /* BytesSlice.swift in Sources */,
+				3A3AEF471B69205500383762 /* ByteConverter.swift in Sources */,
+				3A918E901B6ADEA30030BCCF /* BytesConvertible.swift in Sources */,
 				3A3AEF491B694DE200383762 /* ReadableFileStream.swift in Sources */,
 				3A3AEF3C1B69203900383762 /* main.swift in Sources */,
 				3A3AEF461B69205200383762 /* Bytes.swift in Sources */,

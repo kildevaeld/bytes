@@ -8,6 +8,22 @@
 
 import Darwin
 
+public protocol BytesConvertible {
+    var bytes: [UInt8] { get }
+    init(_ bytes: [UInt8])
+}
+
+extension BytesConvertible {
+    public init(_ bytes: ArraySlice<UInt8>) {
+        self.init([UInt8](bytes))
+    }
+    
+    public init(_ bytes: BytesSlice) {
+        self.init(bytes.array)
+    }
+}
+
+
 
 extension String : BytesConvertible {
     public var bytes: [UInt8] {
@@ -145,3 +161,4 @@ extension UInt : BytesConvertible {
         self = UInt(Utils.concatenateBytes(b[0], b1: b[1], b2: b[2], b3: b[3], b4: b[4], b5: b[5], b6: b[6], b7: b[7]))
     }
 }
+
