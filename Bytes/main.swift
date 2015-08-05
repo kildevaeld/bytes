@@ -24,9 +24,22 @@ func time (fn: () -> Void) -> Double {
     print("time \(elapsed)")
     return elapsed
 }
+time {
+    var bytes = ByteArray(count: 20)
+    
+    let str = "Test mig lige engang"
+    
+    let len = bytes.write(str)
+    
+    
+    //bytes[4..<35] =
+    print(bytes.string)
+}
 
 
-extension Writable {
+
+
+/*extension Writable {
     
     public func write(readable: Readable, bufferSize: Int) -> Int {
         var len = 0, written = 0
@@ -59,25 +72,25 @@ func >>(lhs:Readable, rhs: Writable) -> Int {
     return rhs.write(lhs, bufferSize: 1024*1024)
 }
 
-func >>(lhs:String, rhs:Writable) -> Int {
+func >>(lhs:String, rhs:Writable) -> (file:File?,Int) {
     let file = ReadableFileStream(lhs)
     
     if file == nil {
-        return -1
+        return (nil, -1)
     }
     
-    return file! >> rhs
+    return (file,file! >> rhs)
 }
 
-func >>(lhs:Readable, rhs: String) -> Int {
+func >>(lhs:Readable, rhs: String) -> (file:File?,Int)  {
     
     let file = WritableFileStream(rhs, append: true)
     
     if file == nil {
-        return -1
+        return (nil,-1)
     }
     
-    return lhs >> file!
+    return (file,lhs >> file!)
 }
 
 func >(lhs:Readable, rhs: String) -> Int {
@@ -122,26 +135,19 @@ func copyFile(source:String, target: String) {
 let byt = Bytes(count: 10)
 let bbbb = "Test mig lige engang, så er du sød".bytes
 byt.write("Test mig lige engang, så er du sød\n")
-byt.write(2002, to:36)
+//byt.write(2002, to:36)
 //print(byt.array,bbbb )
 let byt2 = Bytes(count: 10)
 
-let rstream = BytesReader(bytes: byt)
-let wstream = BytesWriter(bytes: byt2)
-
-//rstream >> wstream
-
-"/Users/rasmus/test-stream.txt" >> wstream
-BytesReader(bytes:byt2) > "/Users/rasmus/test.text"
 //let b: String? = byt2.scan(0, to: 36)
-let c = byt[36..<44].int
-let bb = byt2.read(0, to:36)
-let len = bb!.write("Alt det som ingen ser", to: 36)
-let b = bb![0..<36 + len].string//byt2.scan(0, to: 36 + len)
+//let c = byt[36..<44].int
+let bb = byt[0..<36]
+let len = bb.write("Alt det som ingen ser", to: 36)
+let b = byt[0..<36 + len].string//byt2.scan(0, to: 36 + len)
 
 print(b)
-print(c)
-
+//print(c)
+print(byt.string)
 //copyFile("/Users/rasmus/Desktop/dataloger.png", target: "/Users/rasmus/someting-new.png")
 //let string: String? = data?.read()
-//print(string)
+//print(string)*/

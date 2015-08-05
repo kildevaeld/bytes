@@ -8,13 +8,51 @@
 
 import Darwin
 
-struct SlicePosition {
-    let index: Int
-    var to: Int
+public struct SlicePosition {
+    public let index: Int
+    public var to: Int
+    public init(index: Int, to: Int) {
+        self.index = index
+        self.to = to
+    }
+}
+
+/*public class ReadableBytesSlice: ReadableBytesType {
+    let bytes: ReadableBytesType
+    var position: SlicePosition
+    public var count: Int {
+        return self.position.to
+    }
+    init (_ bytes: ReadableBytesType, position: SlicePosition) {
+        self.bytes = bytes
+        self.position = position
+    }
+    
+    public func read(index: Int) -> UInt8 {
+        return self.bytes.read(index + self.position.index)
+    }
+    
+    public func read(index: Int, to: Int) -> BytesSlice? {
+        return self.bytes.read(index + self.position.index, to: to)
+    }
+    
+    public func read(buffer:UnsafeMutablePointer<UInt8>, index: Int, to: Int) -> Int {
+        return self.bytes.read(buffer, index: index + self.position.index, to: self.position.index + to)
+    }
+    
+    public var array: [UInt8] {
+        
+        var array = [UInt8](count: self.position.to, repeatedValue: 0)
+        
+        //let buf = self.bytes.buffer.advancedBy(self.position.index)
+        // bcopy(buf,&array,self.position.to)
+        self.read(&array, index: 0, to: self.count)
+        return array
+    }
 }
 
 public class BytesSlice: BytesType {
-    let bytes: Bytes
+    let bytes: BytesType
     var position: SlicePosition
     public var count: Int {
         return self.position.to
@@ -30,6 +68,10 @@ public class BytesSlice: BytesType {
     
     public func read(index: Int, to: Int) -> BytesSlice? {
         return self.bytes.read(index + self.position.index, to: to)
+    }
+    
+    public func read(buffer:UnsafeMutablePointer<UInt8>, index: Int, to: Int) -> Int {
+        return self.bytes.read(buffer, index: index + self.position.index, to: self.position.index + to)
     }
     
     public func scan<T: BytesConvertible>(index: Int, to: Int) -> T? {
@@ -71,8 +113,8 @@ public class BytesSlice: BytesType {
     
     
     
-    public func write(bytes:UnsafePointer<UInt8>, length:Int, to:Int? = nil) -> Int {
-        let index = to == nil ? 0 : to!
+    public func write(bytes:UnsafePointer<UInt8>, length:Int, to:Int) -> Int {
+        let index = to //== nil ? 0 : to!
         
         let diff = self.position.to - length
         
@@ -89,9 +131,9 @@ public class BytesSlice: BytesType {
         
         var array = [UInt8](count: self.position.to, repeatedValue: 0)
         
-        let buf = self.bytes.buffer.advancedBy(self.position.index)
-        bcopy(buf,&array,self.position.to)
-        
+        //let buf = self.bytes.buffer.advancedBy(self.position.index)
+       // bcopy(buf,&array,self.position.to)
+        self.read(&array, index: 0, to: self.count)
         return array
         
         
@@ -116,7 +158,8 @@ extension BytesSlice : CollectionType, Sliceable {
         get {
             return self.read(i)
         } set (value) {
-            self.bytes[i] = value
+            self.write(value, to: i)
+            //self.bytes[i] = value
         }
     }
     
@@ -125,7 +168,17 @@ extension BytesSlice : CollectionType, Sliceable {
     }
     
     public subscript(i: Range<Index>) -> BytesSlice {
-        return self.read(i.startIndex, to: i.endIndex)!
+        get {
+            return self.read(i.startIndex, to: i.endIndex)!
+        } set (value) {
+            
+            
+            self.write(value, length: i.startIndex, to: i.endIndex)
+        }
     }
-}
+    
+    public func write(bytes: BytesSlice, length: Int, to: Int) {
+        self.write(bytes.array, length: length, to: to)
+    }
+}*/
 

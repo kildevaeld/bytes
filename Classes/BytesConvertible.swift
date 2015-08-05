@@ -18,7 +18,11 @@ extension BytesConvertible {
         self.init([UInt8](bytes))
     }
     
-    public init(_ bytes: BytesSlice) {
+    public init(_ bytes: ByteArraySlice) {
+        self.init(bytes.array)
+    }
+    
+    public init(_ bytes: ByteArray) {
         self.init(bytes.array)
     }
 }
@@ -161,4 +165,58 @@ extension UInt : BytesConvertible {
         self = UInt(Utils.concatenateBytes(b[0], b1: b[1], b2: b[2], b3: b[3], b4: b[4], b5: b[5], b6: b[6], b7: b[7]))
     }
 }
+
+extension ByteArrayType {
+    public var string: String {
+        
+        return String(self.read(0, end: self.count))
+    }
+    
+    public var int: Int {
+        return Int(self.read(0, end: 8))
+    }
+    
+    public var int64: Int64 {
+        return Int64(self.read(0, end: 8))
+    }
+    
+    public var int32: Int32 {
+        return Int32(self.read(0, end: 4))
+    }
+    
+    public var int16: Int16 {
+        return Int16(self.read(0, end: 2))
+    }
+    
+    public var int8: Int8 {
+        return Int8(self.read(0, end: 1))
+    }
+    
+    public var uint: UInt {
+        return UInt(self.read(0, end: 8))
+    }
+    
+    public var uint64: UInt64 {
+        return UInt64(self.read(0, end: 8))
+    }
+    
+    public var uint32: UInt32 {
+        return UInt32(self.read(0, end: 4))
+    }
+    
+    public var uint16: UInt16 {
+        return UInt16(self.read(0, end: 2))
+    }
+    
+    public var uint8: UInt8 {
+        return UInt8(self.read(0, end: 1))
+    }
+    
+    public func toString(from:Int?, to:Int) -> String {
+        let index = from == nil ? 0 : from!
+        let r = self.read(index, end:to)
+        return String(r)
+    }
+}
+
 

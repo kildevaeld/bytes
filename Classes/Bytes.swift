@@ -31,66 +31,13 @@ extension UnsafeMutablePointer {
     }
 }
 
+public let kBytesErrorCode = -1
 
-public protocol BytesType  {
-    var count: Int { get }
-    func read(index: Int, to:Int) -> BytesSlice?
-    func read(index: Int) -> UInt8
-}
 
-extension BytesType {
-    public var string: String {
-        return String(self.read(0, to: self.count)!)
-    }
-    
-    public var int: Int {
-        return Int(self.read(0, to: 8)!)
-    }
-    
-    public var int64: Int64 {
-        return Int64(self.read(0, to: 8)!)
-    }
 
-    public var int32: Int32 {
-        return Int32(self.read(0, to: 4)!)
-    }
-    
-    public var int16: Int16 {
-        return Int16(self.read(0, to: 2)!)
-    }
-    
-    public var int8: Int8 {
-        return Int8(self.read(0, to: 1)!)
-    }
-    
-    public var uint: UInt {
-        return UInt(self.read(0, to: 8)!)
-    }
-    
-    public var uint64: UInt64 {
-        return UInt64(self.read(0, to: 8)!)
-    }
-    
-    public var uint32: UInt32 {
-        return UInt32(self.read(0, to: 4)!)
-    }
-    
-    public var uint16: UInt16 {
-        return UInt16(self.read(0, to: 2)!)
-    }
-    
-    public var uint8: UInt8 {
-        return UInt8(self.read(0, to: 1)!)
-    }
-    
-    public func toString(from:Int?, to:Int) -> String {
-        let index = from == nil ? 0 : from!
-        let r = self.read(index, to: to)
-        return String(r)
-    }
-}
 
-public class Bytes : BytesType {
+
+/*public class Bytes : BytesType {
     public var buffer: UnsafeMutablePointer<UInt8>
     
     private var _len: Int
@@ -124,9 +71,15 @@ public class Bytes : BytesType {
         self._len = bytes.count
     }
     
-    public convenience init(bytes:BytesSlice, copy: Bool = true) {
+    /*public convenience init(bytes:BytesSlice, copy: Bool = true) {
         self.init(bytes:bytes.bytes, copy: copy)
     }
+    
+    public convenience init(bytes: BytesType, copy: Bool = true) {
+        self.init(count: bytes.count)
+        
+        
+    }*/
     
     public func read(index: Int) -> UInt8 {
         return self.buffer[index]
@@ -140,23 +93,35 @@ public class Bytes : BytesType {
         return BytesSlice(self, position: position)
     }
     
-    public func scan<T: BytesConvertible>(index: Int, to: Int) -> T? {
+    public func read(buffer: UnsafeMutablePointer<UInt8>, index: Int, to: Int) -> Int {
+        
+        if index < 0 || index > to || to > self.count { return kBytesErrorCode }
+        
+        let read = to - index
+        
+        let buf = self.buffer.advancedBy(index)
+        bcopy(buf, buffer, read)
+        
+        return read
+    }
+    
+    /*public func scan<T: BytesConvertible>(index: Int, to: Int) -> T? {
         let slice = self.read(index, to:to)
         if slice == nil {
             return nil
         }
         return T(slice!)
-    }
+    }*/
     
     public func write(byte:UInt8, to: Int) -> Int {
-        if to >= self._len { return -1 }
+        if to >= self._len { return kBytesErrorCode }
         self.buffer[to] = byte
         return 1
     }
     
-    public func write(bytes:BytesConvertible, to:Int? = nil) -> Int {
+    /*public func write(bytes:BytesConvertible, to:Int? = nil) -> Int {
         return self.write(bytes.bytes, length:nil, to: to)
-    }
+    }*/
     
     public func write(bytes: [UInt8], length: Int? = nil, to:Int? = nil) -> Int {
         let index = to == nil ? 0 : to!
@@ -189,8 +154,8 @@ public class Bytes : BytesType {
     }
     
     
-    public func write(bytes:UnsafePointer<UInt8>, length:Int, to:Int? = nil) -> Int {
-        let index = to == nil ? 0 : to!
+    public func write(bytes:UnsafePointer<UInt8>, length:Int, to:Int) -> Int {
+        let index = to //== nil ? 0 : to!
         
         let totalLength = length + index
         
@@ -271,7 +236,7 @@ extension Bytes : CollectionType, Sliceable {
         get {
             return self.read(i)
         } set (value) {
-            self[i] = value
+            self.write(value, to: i)
         }
     }
     
@@ -330,7 +295,7 @@ public class BytesWriter : Writable {
         return length
     }
     
-}
+}*/
 
 
 
